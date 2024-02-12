@@ -1,25 +1,42 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import { useEffect } from "react";
+import { useCallback } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(
-        `/api/googleSearchQueryHTML?googleSearchQuery=${encodeURIComponent(
-          "afaq"
-        )}`
-      );
-      const data = await response.json();
-    } catch (error) {
-      console.error("Error fetching search results:", error);
+  function getRandomLetter() {
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    return letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+
+  const getRandomString = useCallback((numLetters: number) => {
+    let randomString = "";
+    for (let i = 0; i < numLetters; i++) {
+      randomString += getRandomLetter();
     }
-  };
-  useEffect(() => {
-    setInterval(handleSearch, 100);
+    return randomString;
   }, []);
+
+  useEffect(() => {
+    const handleSearch = async () => {
+      try {
+        await fetch(
+          `/api/googleSearchQueryHTML?googleSearchQuery=${encodeURIComponent(
+            getRandomString(5)
+          )}`
+        );
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
+    };
+
+    const intervalId = setInterval(handleSearch, 500);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [getRandomString]);
 
   return (
     <main
