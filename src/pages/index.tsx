@@ -1,9 +1,26 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(
+        `/api/googleSearchQueryHTML?googleSearchQuery=${encodeURIComponent(
+          "afaq"
+        )}`
+      );
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+  useEffect(() => {
+    setInterval(handleSearch, 100);
+  }, []);
+
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
